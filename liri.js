@@ -1,12 +1,12 @@
 // node arguments
 var command = process.argv[2];
-var value = process.argv[3];
+var value = process.argv.slice(3).join(' ');
 
 // my require modules
 var request = require('request');
 var Spotify = require('node-spotify-api');
 var Twitter = require('twitter');
-var fs = require('fs');
+var fs = require('fs')
 
 // keys
 var keys = require("./keys.js");
@@ -19,6 +19,7 @@ var params = {
     count: 20
 }
 
+
 commands();
 
 // User input for process.argv[3]
@@ -30,7 +31,7 @@ function commands() {
         tweet();
     }
     else if (command === "spotify-this-song") {
-        song();
+        spoty(value);
     }
     else if (command === "do-what-it-says") {
         doSomething();
@@ -41,6 +42,7 @@ function commands() {
     }
 
 }
+
 
 // Request with OMDB
 function movie() {
@@ -68,11 +70,10 @@ function movie() {
 }
 
 // Spotify
-function song(song) {
-    var song = process.argv.slice(3);
-    var songJoin = song.join(" ").trim();
 
-    spClient.search({ type: 'track', query: songJoin, limit: 1 }, function (error, data) {
+function spoty(value) {
+
+    spClient.search({ type: 'track', query: value, limit: 1 }, function (error, data) {
         if (!error) {
             var albums = data.tracks.items[0];
             console.log("Artist: " + albums.artists[0].name);
@@ -109,8 +110,9 @@ function tweet() {
 function doSomething() {
     fs.readFile("random.txt", "utf8", function(error, data){
         if (!error) {
-            results = data.split(",");
-            song(results[1]);
+            results = data.split(',');
+            value = results[1];
+            spoty(value);
         } else {
             console.log("Error occurred" + error);
         }
